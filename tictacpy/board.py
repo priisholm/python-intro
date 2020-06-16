@@ -32,8 +32,10 @@ class Board(BaseBoard):
         """ Passes the turn by setting the 'current_move' attribute to the other player
 
             Hint: Remember self. in front of class variables. """
-        # Implement me!
-        pass
+        if self.current_move == 'X':
+            self.current_move = 'O'
+        else:
+            self.current_move = 'X'
 
 
     def available_locations(self):
@@ -42,8 +44,7 @@ class Board(BaseBoard):
             Hint: you can check if a value is taken by example:
                     self.state['Top'] is None
         """
-        # Implement me!
-        pass
+        return [k for k, v in self.state.items() if v is None]
 
 
     def set_piece(self, location):
@@ -56,14 +57,17 @@ class Board(BaseBoard):
             Hint: Remember to validate if the location is taken in the state dict.
                   Dicts can be assigned using ie. self.state['Top'] = <value>
         """
-        # Implement me!
-        pass
+        if self.state[location] is not None:
+            raise Exception(f"location {location} is already taken")
+        
+        self.state[location] = self.current_move
 
 
     def reset(self):
         """ Resets the board so all locations are unoccupied and sets the current player to player 1 (X) """
-        # Implement me!
-        pass
+        for k in self.state.keys():
+            self.state[k] = None
+        self.current_move = 'X'
 
 
     def display(self):
@@ -79,7 +83,12 @@ class Board(BaseBoard):
                     |   | X
         """
         # Implement me!
-        pass
+        for i, l in  enumerate(valid_locations):
+            print(self.state.get(l) or ' ', end='')
+            if (i + 1) % 3 == 0:
+                print()
+            else:
+                print(' | ', end='') 
 
 
     def check_win_condition(self):
@@ -95,7 +104,12 @@ class Board(BaseBoard):
                 You can use the valid_locations list for that.
             """
         # Implement me!
-        pass
+        for wc in win_conditions:
+            if self.state[valid_locations[wc[0]]] == self.current_move and \
+                self.state[valid_locations[wc[1]]] == self.current_move and \
+                self.state[valid_locations[wc[2]]] == self.current_move:
+                return True
+        return False
 
 
     def all_filled(self):
@@ -104,7 +118,7 @@ class Board(BaseBoard):
 
             Hint: Just check if all the spots are not None """
         # Implement me!
-        pass
+        return None not in self.state.values()
 
 
     def save(self, filename):
@@ -113,7 +127,8 @@ class Board(BaseBoard):
             Hint: Check the examples folder in the file_system.py for examples on how to save
         """
         # Implement me!
-        pass
+        with open(filename, 'wb') as jar:
+            pickle.dump(self, jar)
 
 
     @staticmethod
@@ -126,4 +141,5 @@ class Board(BaseBoard):
             Hint: Check the examples folder in the file_system.py for examples on how to load
         """
         # Implement me!
-        pass
+        with open(filename, 'rb') as jar:
+            return pickle.load(jar)
